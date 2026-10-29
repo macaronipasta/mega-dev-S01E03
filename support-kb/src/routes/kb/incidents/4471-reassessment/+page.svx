@@ -19,12 +19,12 @@ are for the export dated 4 October 2026; they are not a live queue count.
 
 ## Problems in the merged ticket
 
-- **[Parser](https://github.com/macaronipasta/mega-dev/issues/1):** the shared parser reads dates
-  month-first for day-first tenants, so a day and month can be swapped. App and email reports,
+- **[Parser](https://github.com/macaronipasta/mega-dev/issues/1):** the shared parser read dates
+  month-first for day-first tenants, so a day and month could be swapped. App and email reports,
   as well as applicable form reports, belong here.
-- **[Form hint](https://github.com/macaronipasta/mega-dev/issues/2):** booking-v3 tells people
+- **[Form hint](https://github.com/macaronipasta/mega-dev/issues/2):** booking-v3 told people
   to enter `MM/DD/YYYY` even for day-first tenants.
-  People follow the hint, but the form interprets their entry in the tenant's order. This
+  People followed the hint, but the form interpreted their entry in the tenant's order. This
   is separate from the shared parser issue.
 
 The table groups reports by the desk's cause logic, tenant locale, form version and channel.
@@ -34,6 +34,13 @@ establish a third cause. The table's ticket labels describe the state in the exp
 two new issues above were filed.
 
 <CauseTable ticket={4471} />
+
+## Engineering update
+
+The engineering update reports that #4471 was closed on 5 October 2026. The parser was fixed
+with `fix(dates): parse dd/mm for eu locales`. The hint issue will not be fixed because the
+booking-v3 form was retired. These are the reported outcomes; this page does not independently
+verify a deployment.
 
 ## When reports arrived and were merged
 
@@ -47,6 +54,7 @@ before deciding. Do not treat this page as an amendment to accepted decision 000
 the desk's rule requires a new decision record.
 
 The counts and chart are computed from the exported data. Refresh the export and reassess
-before relying on them for later reports. Fixing the parser alone does not correct the form hint.
+before relying on them for later reports. The parser fix and the form's retirement addressed
+the two issues in different ways.
 
 <RenderStamp {signature} />
