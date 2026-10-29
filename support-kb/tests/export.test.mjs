@@ -23,7 +23,10 @@ assert.deepEqual(groups.map((g) => readAs(g, notes.oneDayMove)), [5, 0]);
 assert.equal(flaggedIds.size, 5);
 assert.equal(flagged.length, 5);
 const html = fs.readFileSync('rendered/4471-review.html', 'utf8');
-for (const value of ['412', '379', '33', ...notes.oneDayMove, deskRef('Codex')]) {
+const page = fs.readFileSync('src/routes/kb/incidents/4471-review/+page.svx', 'utf8');
+const signature = page.match(/^signature:\s*(\S+)\s*$/m)?.[1];
+assert.ok(signature && /^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(signature), 'Page must carry the course-issued ticket signature');
+for (const value of ['412', '379', '33', ...notes.oneDayMove, deskRef(signature)]) {
   assert.ok(html.includes(value), `Rendered page missing ${value}`);
 }
 for (const [label, count] of [['Parser', 379], ['Hint', 33]]) {
