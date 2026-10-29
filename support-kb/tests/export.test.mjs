@@ -13,15 +13,27 @@ const tenants = new Map(fs.readdirSync(`${data}/tenants`).map((file) => {
 const unique = uniqueById(reports);
 const merged = unique.filter((r) => r.mergedInto === 4471);
 const groups = groupByCause(merged, (r) => tenants.get(r.tenant));
+const flaggedIds = new Set(notes.oneDayMove);
+const flagged = merged.filter((r) => flaggedIds.has(r.id));
+const remaining = merged.filter((r) => !flaggedIds.has(r.id));
+const reviewGroups = groupByCause(remaining, (r) => tenants.get(r.tenant));
 assert.equal(reports.length, 427);
 assert.equal(unique.length, 412);
 assert.equal(merged.length, 412);
 assert.deepEqual(groups.map((g) => [g.cause, g.reports.length]), [['parser', 379], ['hint', 33]]);
 assert.deepEqual(groups.map((g) => readAs(g, notes.oneDayMove)), [5, 0]);
+assert.equal(flaggedIds.size, 5);
+assert.equal(flagged.length, 5);
+assert.deepEqual(reviewGroups.map((g) => [g.cause, g.reports.length]), [['parser', 374], ['hint', 33]]);
+assert.equal(remaining.length + flagged.length, merged.length);
 const html = fs.readFileSync('rendered/4471-review.html', 'utf8');
-for (const value of ['412', '379', '33', deskRef('Codex')]) {
+for (const value of ['412', '379', '374', '33', 'Needs review', ...notes.oneDayMove, deskRef('Codex')]) {
   assert.ok(html.includes(value), `Rendered page missing ${value}`);
+}
+for (const [label, count] of [['Parser candidates', 374], ['Hint candidates', 33], ['Needs review', 5]]) {
+  assert.ok(html.includes(`<td>${label}</td><td>${count}</td>`), `Rendered table has incorrect count for ${label}`);
 }
 assert.ok(!html.includes('no desk ref'));
 assert.ok(!html.includes('rel="stylesheet"'));
+assert.ok(!html.includes('not this ticket — no ticket of its own'));
 console.log('Export counts, signature and rendered page verified.');

@@ -8,14 +8,15 @@ signature: Codex
 ---
 
 <script>
-  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import ReviewCauseTable from '#lib/kb/ReviewCauseTable.svelte';
   import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
   import RenderStamp from '#lib/kb/RenderStamp.svelte';
 </script>
 
 The [original incident page](/kb/incidents/4471) treats the merged date reports as one
-problem. The exported data and the desk's classification code instead identify two.
-The table below describes the **4 October 2026 export**, not the current queue.
+problem. The export describes two different problems, but its automatic classification
+does not establish the cause of every report. This page describes the **4 October 2026
+export**, not the current queue.
 
 ## Two causes
 
@@ -24,13 +25,26 @@ The table below describes the **4 October 2026 export**, not the current queue.
 - **[booking-v3 hint](https://github.com/macaronipasta/mega-dev/issues/2):** the form displays `MM/DD/YYYY` to day-first tenants. People follow
   the hint, but the form interprets the entry in the tenant's order.
 
-The table deduplicates by report ID, then uses each tenant's locale, form and report
-channel to classify the report. Intake tags are guesses and do not determine the cause.
-The five reports the desk read as one-day moves remain in their computed group and are
-shown in the table's footnote. Ticket labels in the table reflect the export, before
-any follow-up issues.
+The table deduplicates by report ID. For reports not flagged by the desk, it uses the
+existing classification based on tenant locale, form and channel. That classification
+does not read report bodies, so its counts are candidates, not confirmed root causes.
 
-<CauseTable ticket={4471} />
+The desk flagged five reports for a different reading. They are set aside for review,
+not treated as five confirmed cases of one new bug:
+
+- **R-41202:** an invite for 12 May appeared in the calendar on 11 May.
+- **R-41209:** bookings in June were reported one day off.
+- **R-41236:** an invite arrived before the booking was made; no one-day shift is stated.
+- **R-41344:** people in Lisbon and Toronto received different days for the same meeting.
+  Time zones may explain this, but the report does not establish the cause or a defect.
+- **R-41620:** Tuesday 6 October appeared as Monday.
+
+<ReviewCauseTable />
+
+The original classifier assigns all five to the parser, giving 379 parser candidates.
+The review table sets them aside, leaving 374 parser candidates and 33 hint candidates.
+The reports and their grouping need further investigation before the cause and count
+of any additional issue can be confirmed.
 
 ## Reported engineering update
 
