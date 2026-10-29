@@ -5,16 +5,15 @@
   import { tenantOf } from '#lib/kb/locales';
 
   const merged = uniqueById(reports as Report[]).filter((report) => report.mergedInto === 4471);
-  const flaggedIds = new Set(notes.oneDayMove);
-  const flagged = merged.filter((report) => flaggedIds.has(report.id));
-  const remaining = merged.filter((report) => !flaggedIds.has(report.id));
-  const groups = groupByCause(remaining, tenantOf);
+  const groups = groupByCause(merged, tenantOf);
   const count = (cause: string) => groups.find((group) => group.cause === cause)?.reports.length ?? 0;
+  const flagged = groups.find((group) => group.cause === 'parser')?.reports
+    .filter((report) => notes.oneDayMove.includes(report.id)).length ?? 0;
 </script>
 
 <p>
   <strong>{merged.length}</strong> unique reports in the 4 October export;
-  the counts below are a triage starting point, not confirmed root causes.
+  classified by the desk's cause logic.
 </p>
 
 <table>
@@ -22,11 +21,12 @@
     <tr><th>Classification</th><th>Reports</th><th>Basis</th></tr>
   </thead>
   <tbody>
-    <tr><td>Parser candidates</td><td>{count('parser')}</td><td>Desk classification, excluding flagged reports</td></tr>
-    <tr><td>Hint candidates</td><td>{count('hint')}</td><td>Desk classification, excluding flagged reports</td></tr>
-    <tr><td>Needs review</td><td>{flagged.length}</td><td>Flagged by desk notes; cause not established</td></tr>
+    <tr><td>Parser</td><td>{count('parser')}</td><td>Includes the reports noted below</td></tr>
+    <tr><td>Hint</td><td>{count('hint')}</td><td>booking-v3 form reports for day-first tenants</td></tr>
     {#if count('unplaced')}
       <tr><td>Unplaced</td><td>{count('unplaced')}</td><td>No desk classification</td></tr>
     {/if}
   </tbody>
 </table>
+
+<p>{flagged} parser reports were read differently by the desk; they remain in the parser count.</p>
