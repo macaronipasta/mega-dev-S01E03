@@ -1,0 +1,53 @@
+---
+layout: runbook
+title: '#4471 · reassessing date reports'
+owner: support desk
+status: reviewed
+reviewed: 2026-10-29
+signature: Codex
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+The [original incident page](/kb/incidents/4471) treats the merged date reports as one
+problem. The exported data and the desk's classification code instead identify two.
+The table below describes the **4 October 2026 export**, not the current queue.
+
+## Two causes
+
+- **[Shared parser](https://github.com/macaronipasta/mega-dev/issues/1):** it reads dates month-first even for tenants who write the day first.
+  Ambiguous dates can be interpreted as the wrong day.
+- **[booking-v3 hint](https://github.com/macaronipasta/mega-dev/issues/2):** the form displays `MM/DD/YYYY` to day-first tenants. People follow
+  the hint, but the form interprets the entry in the tenant's order.
+
+The table deduplicates by report ID, then uses each tenant's locale, form and report
+channel to classify the report. Intake tags are guesses and do not determine the cause.
+The five reports the desk read as one-day moves remain in their computed group and are
+shown in the table's footnote. Ticket labels in the table reflect the export, before
+any follow-up issues.
+
+<CauseTable ticket={4471} />
+
+## Reported engineering update
+
+An engineering update relayed to us says #4471 closed on 5 October, the parser was fixed
+with `fix(dates): parse dd/mm for eu locales`, and the hint will not be fixed because
+booking-v3 was retired. These are reported outcomes; this page does not independently
+verify a deployment or the retirement.
+
+## Arrival and merge history
+
+<QueueTimeline ticket={4471} />
+
+## Triage
+
+Reports with the same subject can have different causes, and reports with different
+subjects can share a cause. Check the tenant, channel and form before grouping. A change
+to the accepted subject-based rule requires a new decision record; this page does not
+edit the accepted decision.
+
+<RenderStamp {signature} />
